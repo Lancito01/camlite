@@ -1,10 +1,27 @@
-# CamLite
+<p align="center">
+  <img src="assets/logo.svg" width="128" height="128" alt="CamLite logo">
+</p>
 
-A tiny, native replacement for **Logi Capture** on Windows 11: use your webcam at its
-real hardware quality (1080p30 / 720p60, 16:9) in every app — without the recording,
-scenes, overlays and background CPU of Logi Capture.
+<h1 align="center">CamLite</h1>
 
-<p align="center"><i>Rust · Media Foundation · ~5 MB · zero background processes</i></p>
+<p align="center">
+  Your webcam at full hardware quality in every app — a tiny native replacement for Logi Capture.
+  <br>
+  <a href="https://github.com/Lancito01/camlite/releases/latest"><b>Download</b></a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#building">Build</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Lancito01/camlite/actions/workflows/ci.yml"><img src="https://github.com/Lancito01/camlite/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/Lancito01/camlite/releases/latest"><img src="https://img.shields.io/github/v/release/Lancito01/camlite?color=5b8cff" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/Windows-11-0b0c0f" alt="Windows 11">
+  <img src="https://img.shields.io/badge/license-MIT-22252c" alt="MIT">
+</p>
+
+Use your webcam at its real hardware quality (1080p30 / 720p60, 16:9) in Zoom, Teams,
+Discord, OBS and browsers — without the recording, scenes, overlays and background CPU of
+Logi Capture. Rust · Media Foundation · ~5 MB · zero background processes.
 
 ## Why
 
