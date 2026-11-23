@@ -156,7 +156,7 @@ dependencies = [
 
 [[package]]
 name = "camlite"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "camlite-common",
  "eframe",
@@ -167,7 +167,7 @@ dependencies = [
 
 [[package]]
 name = "camlite-common"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "windows",
  "windows-core",
@@ -175,7 +175,7 @@ dependencies = [
 
 [[package]]
 name = "camlite-vcam"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "camlite-common",
  "windows",

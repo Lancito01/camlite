@@ -121,6 +121,10 @@ pub fn install() -> Result<()> {
         }
     }
     register_com(&dir.join(DLL_NAME))?;
+    camlite_common::log::log(
+        "app.log",
+        &format!("install: v{} from {} to {}", env!("CARGO_PKG_VERSION"), exe_dir.display(), dir.display()),
+    );
 
     // Start menu shortcut for all users.
     let lnk = std::env::var("ProgramData").unwrap_or_else(|_| r"C:\ProgramData".into())
