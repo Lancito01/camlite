@@ -1,0 +1,8 @@
+[package]
+name = "camlite-common"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+windows.workspace = true
+windows-core.workspace = true

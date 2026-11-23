@@ -1,0 +1,12 @@
+[package]
+name = "camlite-vcam"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+camlite-common = { path = "../common" }
+windows.workspace = true
+windows-core.workspace = true

@@ -1,0 +1,10 @@
+[package]
+name = "camlite"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+camlite-common = { path = "../common" }
+windows.workspace = true
+windows-core.workspace = true
+eframe = { version = "0.37", default-features = false, features = ["glow", "default_fonts"] }
