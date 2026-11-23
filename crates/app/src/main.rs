@@ -28,7 +28,11 @@ fn main() {
             apply_saved();
             0
         }
-        _ => run_ui(),
+        "--after-update" => {
+            ui::AFTER_UPDATE.store(true, std::sync::atomic::Ordering::SeqCst);
+            run_ui(true)
+        }
+        _ => run_ui(false),
     };
     std::process::exit(code);
 }
@@ -47,18 +51,33 @@ fn apply_saved() {
     }
 }
 
-fn run_ui() -> i32 {
-    // Single instance: focus the existing window instead.
-    unsafe {
-        let _mutex = CreateMutexW(None, true, w!("CamLite.SingleInstance"));
-        if GetLastError() == ERROR_ALREADY_EXISTS {
-            if let Ok(hwnd) = FindWindowW(PCWSTR::null(), w!("CamLite")) {
-                let _ = ShowWindow(hwnd, SW_RESTORE);
-                let _ = SetForegroundWindow(hwnd);
+fn run_ui(after_update: bool) -> i32 {
+    // Single instance: focus the existing window instead. Right after an
+    // update the previous version is still shutting down, so wait for it
+    // (up to 15 s) instead of bowing out.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(15);
+    loop {
+        unsafe {
+            let mutex = CreateMutexW(None, true, w!("CamLite.SingleInstance"));
+            if GetLastError() != ERROR_ALREADY_EXISTS {
+                std::mem::forget(mutex);
+                break;
             }
-            return 0;
+            if let Ok(h) = mutex {
+                let _ = windows::Win32::Foundation::CloseHandle(h);
+            }
+            if !after_update || std::time::Instant::now() > deadline {
+                if let Ok(hwnd) = FindWindowW(PCWSTR::null(), w!("CamLite")) {
+                    let _ = ShowWindow(hwnd, SW_RESTORE);
+                    let _ = SetForegroundWindow(hwnd);
+                }
+                return 0;
+            }
         }
-        std::mem::forget(_mutex);
+        std::thread::sleep(std::time::Duration::from_millis(150));
+    }
+    if after_update {
+        camlite_common::log::log("app.log", &format!("update: now running v{}", updater::VERSION));
     }
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()

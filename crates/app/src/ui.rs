@@ -14,6 +14,9 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use windows::Win32::Media::MediaFoundation::IMFMediaSource;
 
+/// Set when this process was started by the updater.
+pub static AFTER_UPDATE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
 const BG: Color32 = Color32::from_rgb(0x0e, 0x0f, 0x11);
 const CARD: Color32 = Color32::from_rgb(0x17, 0x18, 0x1b);
 const RAISED: Color32 = Color32::from_rgb(0x23, 0x25, 0x29);
@@ -140,6 +143,10 @@ impl App {
             updater: Updater::new(),
             update_checked: false,
         };
+        if AFTER_UPDATE.load(std::sync::atomic::Ordering::SeqCst) {
+            *app.updater.status.lock().unwrap() = Status::Updated;
+            app.update_checked = true;
+        }
         let wanted = app.settings.device.clone();
         app.select_device(camera::pick_device(&app.devices, &wanted));
         app
@@ -513,6 +520,7 @@ impl App {
                 Status::Idle => format!("Version {}", updater::VERSION),
                 Status::Checking => "Checking for updates…".into(),
                 Status::UpToDate => format!("Up to date · v{}", updater::VERSION),
+                Status::Updated => format!("Updated to v{} ✓", updater::VERSION),
                 Status::Available { version, .. } => format!("Version {version} is available"),
                 Status::Downloading { version } => format!("Downloading {version}…"),
                 Status::Installing { version } => format!("Installing {version}…"),
@@ -525,7 +533,7 @@ impl App {
                         self.updater.update(ui.ctx());
                     }
                 }
-                Status::Idle | Status::UpToDate | Status::Failed(_) => {
+                Status::Idle | Status::UpToDate | Status::Updated | Status::Failed(_) => {
                     if ui.add(plain_button("Check now")).clicked() {
                         self.updater.check(ui.ctx());
                     }

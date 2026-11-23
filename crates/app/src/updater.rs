@@ -20,6 +20,8 @@ pub enum Status {
     Idle,
     Checking,
     UpToDate,
+    /// This process was just started by a successful update.
+    Updated,
     Available { version: String, urls: Vec<String> },
     Downloading { version: String },
     Installing { version: String },
@@ -85,19 +87,38 @@ impl Updater {
             })();
             match result {
                 Ok(exe) => {
+                    log(&format!("downloaded v{version} to {}", dir.display()));
                     me.set(Status::Installing { version: version.clone() }, &ctx);
-                    if crate::install::run_elevated_exe(&exe, "--install") {
-                        let _ = std::process::Command::new(crate::install::install_dir().join(crate::install::EXE_NAME))
-                            .arg("--after-update")
-                            .spawn();
-                        std::process::exit(0);
+                    if !crate::install::run_elevated_exe(&exe, "--install") {
+                        log("install cancelled or failed");
+                        me.set(Status::Failed("Install was cancelled or failed".into()), &ctx);
+                        return;
                     }
-                    me.set(Status::Failed("Update was cancelled".into()), &ctx);
+                    let installed = crate::install::install_dir().join(crate::install::EXE_NAME);
+                    match std::process::Command::new(&installed).arg("--after-update").spawn() {
+                        Ok(_) => {
+                            log(&format!("installed v{version}; restarting"));
+                            // The new instance waits for this one to release the
+                            // single-instance lock before opening its window.
+                            std::process::exit(0);
+                        }
+                        Err(e) => {
+                            log(&format!("installed v{version} but relaunch failed: {e}"));
+                            me.set(Status::Failed(format!("Installed — please reopen CamLite ({e})")), &ctx);
+                        }
+                    }
                 }
-                Err(e) => me.set(Status::Failed(e), &ctx),
+                Err(e) => {
+                    log(&format!("download failed: {e}"));
+                    me.set(Status::Failed(e), &ctx)
+                }
             }
         });
     }
+}
+
+fn log(msg: &str) {
+    camlite_common::log::log("app.log", &format!("update: {msg}"));
 }
 
 /// (version without "v", asset download URLs) of the latest release.
