@@ -1,0 +1,12 @@
+# Regenerates assets/camlite.ico, logo.png and icon-64.rgba from assets/logo.svg.
+# Not part of the app build:  cargo run --manifest-path tools/icongen/Cargo.toml
+[package]
+name = "icongen"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+resvg = "0.50"

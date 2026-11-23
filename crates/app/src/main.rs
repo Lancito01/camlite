@@ -78,29 +78,9 @@ fn run_ui() -> i32 {
     }
 }
 
-/// A small lens glyph drawn at startup (no resource compiler needed).
+/// Window icon: the logo pre-rendered to raw 64×64 RGBA by tools/icongen.
 fn icon() -> egui::IconData {
-    let n = 64usize;
-    let mut rgba = vec![0u8; n * n * 4];
-    let c = (n as f32 - 1.0) / 2.0;
-    for y in 0..n {
-        for x in 0..n {
-            let d = ((x as f32 - c).powi(2) + (y as f32 - c).powi(2)).sqrt();
-            let px = &mut rgba[(y * n + x) * 4..][..4];
-            let (col, a): ([u8; 3], f32) = if d < 31.5 && d >= 22.0 {
-                ([0x5b, 0x8c, 0xff], 1.0)
-            } else if d < 22.0 && d >= 12.0 {
-                ([0x17, 0x18, 0x1b], 1.0)
-            } else if d < 12.0 {
-                ([0xec, 0xed, 0xef], 1.0)
-            } else {
-                ([0, 0, 0], 0.0)
-            };
-            let edge = (31.5 - d).clamp(0.0, 1.0);
-            px.copy_from_slice(&[col[0], col[1], col[2], (a * edge * 255.0) as u8]);
-        }
-    }
-    egui::IconData { rgba, width: n as u32, height: n as u32 }
+    egui::IconData { rgba: include_bytes!("../../../assets/icon-64.rgba").to_vec(), width: 64, height: 64 }
 }
 
 fn report(r: windows_core::Result<()>) -> i32 {
