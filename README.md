@@ -39,7 +39,35 @@ CamLite does the same job the lightweight way:
 - **Constant frame rate** — turns off the camera's low-light "exposure priority", which
   otherwise silently halves the frame rate in dim rooms (a C922 drops 30 → 15 fps).
 
+## Set it and forget it
+
+**You don't keep CamLite open.** Set up your camera once, close the window, and you're done.
+
+1. **Open CamLite and tweak.** Pick 1080p · 30 or 720p · 60, zoom, focus, colors. Every
+   change is saved instantly — there's no Save button.
+2. **Close it.** Nothing stays running: no tray icon, no service, no startup app.
+3. **Pick "CamLite Camera" in your video app.** Whenever an app opens it, Windows wakes
+   CamLite's camera component, which applies your settings to the webcam and streams your
+   chosen resolution. When the app closes the camera, it goes back to sleep.
+
+Your settings live in a file, not in a running program, and they're re-applied every time
+the camera starts — so they survive reboots and unplugging the webcam.
+
+**Do I need "Apply settings when Windows starts"?** Only if some apps use your webcam
+*directly* (e.g. "C922 Pro Stream Webcam" instead of "CamLite Camera"). Webcams forget their
+settings when they lose power, so this option re-applies them for a fraction of a second at
+sign-in and exits. If you always pick CamLite Camera, leave it off.
+
+| | Logi Capture | CamLite |
+|---|---|---|
+| Runs in the background | Yes, all the time | No — only while an app uses the camera |
+| Needs to be open for your settings | Yes | No |
+| Recording, scenes, overlays | Yes | No — just your camera, done right |
+| Install size | ~340 MB | ~5 MB |
+
 ## How it works
+
+For the curious:
 
 ```
  Zoom / Teams / Discord / browser ──▶ "CamLite Camera" ──▶ Windows Camera Frame Server
